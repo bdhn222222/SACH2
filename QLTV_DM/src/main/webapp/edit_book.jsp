@@ -74,7 +74,8 @@
 					<div class="input-group">
 					<div class="custom-file">
 						<input type="hidden" name="image_str"
-								value="${book.getImage()}" /> <input type="file"
+								value="${book.getImage()}" /> 
+								<input type="file"
 								accept="image/png, image/jpeg" class="custom-file-input"
 								id="customFile" name="image"> <label
 								class="custom-file-label" for="customFile"

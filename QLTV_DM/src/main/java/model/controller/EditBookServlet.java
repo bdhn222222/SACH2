@@ -6,32 +6,47 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.bo.AuthorsBO;
+import model.bo.BookBO;
+import model.bo.BookShelfBO;
+import model.bo.CategoryBO;
+import model.bean.Authors;
+import model.bean.Book;
+import model.bean.BookShelf;
+import model.bean.Category;
+import model.bean.User;
+
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
-import model.bean.Authors;
-import model.bean.Book;
-import model.bean.BookShelf;
-import model.bean.Category;
-import model.bean.User;
-import model.bo.AuthorsBO;
-import model.bo.BookBO;
-import model.bo.BookShelfBO;
-import model.bo.CategoryBO;
+
 @WebServlet("/EditBook")
+@MultipartConfig
 public class EditBookServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private CategoryBO categoryBO = new CategoryBO();
-    private AuthorsBO authorsBO = new AuthorsBO();
-    private BookShelfBO bookshelfBO = new BookShelfBO();
     private BookBO bookBO = new BookBO();
+    private BookShelfBO bookshelfBO = new BookShelfBO();
+    private AuthorsBO authorsBO = new AuthorsBO();
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public EditBookServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
     	String errorString = null;
 		HttpSession session = request.getSession();
@@ -82,17 +97,20 @@ public class EditBookServlet extends HttpServlet {
         }
     }
 }
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-
-        String idBook = request.getParameter("idBook");
-        String nameBook = request.getParameter("nameBook");
-        String idCategory = request.getParameter("category");
-        String idBookShelf = request.getParameter("bookShelf");
-        String idAuthors = request.getParameter("authors");
-        Integer amount = Integer.parseInt(request.getParameter("amount"));
-        Part file = request.getPart("fileImage");
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		 String idBook = request.getParameter("idBook");
+	        String nameBook = request.getParameter("nameBook");
+	        String idCategory = request.getParameter("category");
+	        String idBookShelf = request.getParameter("bookShelf");
+	        String idAuthors = request.getParameter("authors");
+	        Integer amount = Integer.parseInt(request.getParameter("amount"));
+		Part file = request.getPart("image");
 		String fileName = request.getParameter("image_str");
 		if (!getFilename(file).equals("")) {
 			String savePath = getServletContext().getRealPath("/") + "Resources\\img\\products";
@@ -105,85 +123,80 @@ public class EditBookServlet extends HttpServlet {
 		}
 //		String filePath = savePath + File.separator + fileName;
 
-        if (idBook != null && !idBook.isEmpty()) {
-            try {
-                Integer bookID = Integer.parseInt(idBook);
-                Book book = new Book();
-                Category category = new Category();
-                BookShelf bookShelf = new BookShelf();
-                Authors authors = new Authors();
+		 if (idBook != null && !idBook.isEmpty()) {
+	            try {
+	                Integer bookID = Integer.parseInt(idBook);
+	                Book book = new Book();
+	                Category category = new Category();
+	                BookShelf bookShelf = new BookShelf();
+	                Authors authors = new Authors();
 
-                try {
-                    int categoryId = Integer.parseInt(idCategory);
-                    category = categoryBO.findCategory(categoryId);
-                } catch (ClassNotFoundException | SQLException e1) {
-                    e1.printStackTrace();
-                    request.setAttribute("errorMessage", "Failed to find category.");
-                    doGet(request, response);
-                    return;
-                }
+	                try {
+	                    int categoryId = Integer.parseInt(idCategory);
+	                    category = categoryBO.findCategory(categoryId);
+	                } catch (ClassNotFoundException | SQLException e1) {
+	                    e1.printStackTrace();
+	                    request.setAttribute("errorMessage", "Failed to find the category.");
+	                    doGet(request, response);
+	                    return;
+	                }
 
-                try {
-                    int bookShelfId = Integer.parseInt(idBookShelf);
-                    bookShelf = bookshelfBO.findBookShelf(bookShelfId);
-                } catch (ClassNotFoundException | SQLException e1) {
-                    e1.printStackTrace();
-                    request.setAttribute("errorMessage", "Failed to find book shelf.");
-                    doGet(request, response);
-                    return;
-                }
+	                try {
+	                    int bookShelfId = Integer.parseInt(idBookShelf);
+	                    bookShelf = bookshelfBO.findBookShelf(bookShelfId);
+	                } catch (ClassNotFoundException | SQLException e2) {
+	                    e2.printStackTrace();
+	                    request.setAttribute("errorMessage", "Failed to find the bookshelf.");
+	                    doGet(request, response);
+	                    return;
+	                }
 
-                try {
-                    int authorsId = Integer.parseInt(idAuthors);
-                    authors = authorsBO.findAuthors(authorsId);
-                } catch (NumberFormatException | ClassNotFoundException | SQLException e1) {
-                    e1.printStackTrace();
-                    request.setAttribute("errorMessage", "Failed to find authors.");
-                    doGet(request, response);
-                    return;
-                }
+	                try {
+	                    int authorsId = Integer.parseInt(idAuthors);
+	                    authors = authorsBO.findAuthors(authorsId);
+	                } catch (ClassNotFoundException | SQLException e3) {
+	                    e3.printStackTrace();
+	                    request.setAttribute("errorMessage", "Failed to find the authors.");
+	                    doGet(request, response);
+	                    return;
+	                }
 
-                book.setIdBook(bookID);
-                book.setNameBook(nameBook);
-                book.setAmount(amount);
-                book.setImage(fileName);
-                book.setCategory(category);
-                book.setAuthors(authors);
-                book.setBookShelf(bookShelf);
+	                book.setIdBook(bookID);
+	                book.setNameBook(nameBook);
+	                book.setCategory(category);
+	                book.setBookShelf(bookShelf);
+	                book.setAuthors(authors);
+	                book.setAmount(amount);
+	                book.setImage(fileName);
 
-                BookBO bookBO = new BookBO();
-                   int result = bookBO.updateBook(book);
-                   
-                   if (result != 0) {
-                       response.sendRedirect(request.getContextPath() + "/ManageBook");
-                   } else {
-                       response.getWriter().println("Update failed!");
-                   }
-               } catch (NumberFormatException | ClassNotFoundException | SQLException e) {
-                   e.printStackTrace();
-                   response.getWriter().println("An error occurred while processing your request.");
-               }
-           } else {
-               response.getWriter().println("Invalid reader ID!");
-           }
-       }
-    private String extractfilename(Part file) {
-		String cd = file.getHeader("content-disposition");
-		String[] items = cd.split(";");
-		for (String string : items) {
-			if (string.trim().startsWith("filename")) {
-				return string.substring(string.indexOf("=") + 2, string.length() - 1);
-			}
-		}
-		return "";
+	                bookBO.updateBook(book);
+	                response.sendRedirect(request.getContextPath() + "/ManageBook");
+	            } catch (NumberFormatException | ClassNotFoundException | SQLException e) {
+	                e.printStackTrace();
+	                request.setAttribute("errorMessage", "Failed to update the book.");
+	                doGet(request, response);
+	            }
+	        }
+	    }
+
+	    private String getFilename(Part part) {
+	        for (String cd : part.getHeader("content-disposition").split(";")) {
+	            if (cd.trim().startsWith("filename")) {
+	                String fileName = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+	                return fileName.substring(fileName.lastIndexOf('/') + 1).substring(fileName.lastIndexOf('\\') + 1); // MSIE fix.
+	            }
+	        }
+	        return null;
+	    }
+
+	    private String extractfilename(Part filePart) {
+	        String contentDisp = filePart.getHeader("content-disposition");
+	        String[] items = contentDisp.split(";");
+	        for (String s : items) {
+	            if (s.trim().startsWith("filename")) {
+	                return s.substring(s.indexOf("=") + 2, s.length() - 1);
+	            }
+	        }
+	        return "";
+	    }
 	}
-
-	private static String getFilename(Part part) {
-		for (String cd : part.getHeader("content-disposition").split(";")) {
-			if (cd.trim().startsWith("filename")) {
-				return cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
-			}
-		}
-		return "";
-	}
-   }

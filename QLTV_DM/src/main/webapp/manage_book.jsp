@@ -52,6 +52,7 @@
 										<th>Category</th>
 										<th>Amount</th>
 										<th>BookShelf</th>
+										<th>Authors</th>
 										<th>Image</th>
 										<th>Edit</th>
 										<th>Delete</th>
